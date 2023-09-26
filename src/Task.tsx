@@ -24,7 +24,6 @@ const Task: React.FC<TaskProps> = ({
 
   const handleSave = () => {
     setIsEditing(false);
-    // You can add code here to save the newTitle in your task list
   };
 
   return (

@@ -1,7 +1,6 @@
-import React, { useState } from 'react';
-import './App.css';
-
-import Task from './Task';
+import React, { useState } from "react";
+import { MdDone, MdCreate, MdDelete, MdUndo, MdOutlineCancel } from "react-icons/md";
+import "./App.css";
 
 interface TaskData {
   id: number;
@@ -11,10 +10,12 @@ interface TaskData {
 
 const App: React.FC = () => {
   const [tasks, setTasks] = useState<TaskData[]>([]);
-  const [newTaskTitle, setNewTaskTitle] = useState('');
+  const [newTaskTitle, setNewTaskTitle] = useState("");
+  const [editingTask, setEditingTask] = useState<TaskData | null>(null);
+  const [editedTaskTitle, setEditedTaskTitle] = useState("");
 
   const addTask = () => {
-    if (newTaskTitle.trim() === '') return;
+    if (newTaskTitle.trim() === "") return;
 
     const newTask: TaskData = {
       id: tasks.length + 1,
@@ -23,7 +24,7 @@ const App: React.FC = () => {
     };
 
     setTasks([...tasks, newTask]);
-    setNewTaskTitle('');
+    setNewTaskTitle("");
   };
 
   const deleteTask = (id: number) => {
@@ -36,6 +37,28 @@ const App: React.FC = () => {
       task.id === id ? { ...task, completed: !task.completed } : task
     );
     setTasks(updatedTasks);
+  };
+
+  const startEditing = (task: TaskData) => {
+    setEditingTask(task);
+    setEditedTaskTitle(task.title);
+  };
+
+  const cancelEditing = () => {
+    setEditingTask(null);
+    setEditedTaskTitle("");
+  };
+
+  const updateTask = () => {
+    if (editedTaskTitle.trim() === "") return;
+
+    const updatedTasks = tasks.map((task) =>
+      task.id === editingTask?.id ? { ...task, title: editedTaskTitle } : task
+    );
+
+    setTasks(updatedTasks);
+    setEditingTask(null);
+    setEditedTaskTitle("");
   };
 
   return (
@@ -51,14 +74,56 @@ const App: React.FC = () => {
 
       <div className="task-list">
         {tasks.map((task) => (
-          <Task
-            key={task.id}
-            id={task.id}
-            title={task.title}
-            completed={task.completed}
-            onDelete={deleteTask}
-            onToggle={toggleTask}
-          />
+          <div key={task.id}>
+            {editingTask?.id === task.id ? (
+              <div>
+                <input
+                  type="text"
+                  value={editedTaskTitle}
+                  onChange={(e) => setEditedTaskTitle(e.target.value)}
+                />
+                <MdDone className="downButton" onClick={updateTask} />
+                <MdOutlineCancel className="downButton" onClick={cancelEditing} />
+              </div>
+            ) : (
+              <div>
+                <span
+                  style={{
+                    textDecoration: task.completed ? "line-through" : "none",
+                  }}
+                >
+                  {task.title}
+                </span>
+                <div className="task-icons">
+                  <>
+                    {task.completed ? (
+                      <>
+                        <MdUndo
+                          className="downButton"
+                          onClick={() => toggleTask(task.id)}
+                        />
+                      </>
+                    ) : (
+                      <>
+                        <MdDone
+                          className="downButton"
+                          onClick={() => toggleTask(task.id)}
+                        />
+                      </>
+                    )}
+                  </>
+                  <MdCreate
+                    className="downButton"
+                    onClick={() => startEditing(task)}
+                  />
+                  <MdDelete
+                    className="downButton"
+                    onClick={() => deleteTask(task.id)}
+                  />
+                </div>
+              </div>
+            )}
+          </div>
         ))}
       </div>
     </div>
