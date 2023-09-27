@@ -38,11 +38,12 @@ button {
 
 .downButton {
   margin-bottom: 10px;
-  margin-left: 5px;
+  margin-left: 10px;
   margin-top: 5px;
   border-radius: 8px;
   color: azure;
   background: #282c34;
+  box-shadow: 0 8px 6px -6px black;
   padding: 3px;
   cursor: pointer;
 }
